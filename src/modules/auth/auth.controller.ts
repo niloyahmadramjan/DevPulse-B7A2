@@ -9,7 +9,30 @@ const signup = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "Congratulations! Your account was created successfully.",
+      message: "User registered successfully",
+      data: result,
+    });
+  } catch (error: unknown) {
+    const errMessage =
+      error instanceof Error ? error.message : "Unknown error";
+
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Something went wrong",
+      error: errMessage,
+    });
+  }
+};
+
+const login = async (req: Request, res: Response) => {
+  try {
+    const result = await authServices.loginUser(req.body);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Login successful",
       data: result,
     });
   } catch (error: unknown) {
@@ -27,4 +50,5 @@ const signup = async (req: Request, res: Response) => {
 
 export const signupController = {
   signup,
+  login
 };
