@@ -11,8 +11,6 @@ const config = {
   port: process.env.PORT || 3000,
   connection_string: process.env.DATABASE_URI as string,
   jwt_secret: process.env.JWT_SECRET as string,
-  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET as string,
-  node_env: process.env.NODE_ENV as string
   
 };
 

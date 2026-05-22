@@ -1,6 +1,7 @@
-import express, { type Request, type Response } from "express"
+import express, {type Request, type Response } from "express"
 import { authrouter } from "./modules/auth/auth.routes.js"
 import { issueRouter } from "./modules/issue/issue.routes.js"
+import notFoundRouter from "./middleware/notfound.js"
 const app = express()
 
 app.use(express.json())
@@ -10,5 +11,13 @@ app.get("/", (req: Request, res: Response)=>{
 })
 app.use("/api/auth", authrouter)
 app.use("/api/issues", issueRouter)
+
+
+app.use("*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
 
 export default app;

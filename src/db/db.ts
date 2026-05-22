@@ -8,8 +8,10 @@ export const pool = new Pool({
 
 export const initDB = async () => {
   try {
-    await pool.connect()
-    await dbschema()
+    await pool.query("SELECT 1");
+
+    await dbschema();
+
     console.log("Database connected successfully!");
   } catch (error) {
     console.log(error);
