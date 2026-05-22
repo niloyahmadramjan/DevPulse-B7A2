@@ -12,7 +12,7 @@ export const dbschema = async () => {
 
       password TEXT NOT NULL,
 
-      role VARCHAR(20) DEFAULT 'contributor'
+      role VARCHAR(20) NOT NULL DEFAULT 'contributor'
         CHECK (role IN ('contributor', 'maintainer')),
 
       created_at TIMESTAMP DEFAULT NOW(),

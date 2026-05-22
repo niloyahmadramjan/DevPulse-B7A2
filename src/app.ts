@@ -1,7 +1,6 @@
 import express, {type Request, type Response } from "express"
 import { authrouter } from "./modules/auth/auth.routes.js"
 import { issueRouter } from "./modules/issue/issue.routes.js"
-import notFoundRouter from "./middleware/notfound.js"
 const app = express()
 
 app.use(express.json())
