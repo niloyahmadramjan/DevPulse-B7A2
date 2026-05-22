@@ -7,12 +7,15 @@ import AppError from "../../utils/AppError.js";
 
 const createUser = async (payload: IUser) => {
   const { name, email, password, role } = payload;
+  const normalizedEmail = email.toLowerCase();
 
   const isUserExist = await pool.query(
     `
-        SELECT * FROM users WHERE email = $1
+        SELECT id, name, email, password, role, created_at, updated_at
+        FROM users
+        WHERE email = $1
         `,
-    [email],
+    [normalizedEmail],
   );
   if (isUserExist.rows.length !== 0) {
     throw new AppError(409, "User already exists");
@@ -50,7 +53,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   // User not found
   if (result.rows.length === 0) {
-    throw new AppError(400,"Invalid credentials");
+    throw new AppError(400, "Invalid credentials");
   }
 
   const user = result.rows[0];
@@ -59,17 +62,14 @@ const loginUser = async (payload: TLoginUser) => {
   const isPasswordMatched = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatched) {
-    throw new AppError(400,"Invalid credentials");
+    throw new AppError(400, "Invalid credentials");
   }
 
   // JWT Payload
   const jwtPayload = {
     id: user.id,
     name: user.name,
-    email: user.email,
     role: user.role,
-    created_at: user.created_at,
-    updated_at: user.updated_at,
   };
 
   // Generate token
