@@ -1,10 +1,7 @@
 import { pool } from "../../db/db.js";
 import type { Iissue } from "../../types/issue.Iinterface.js";
 
-const createIssue = async (payload: Iissue) => {
-  // const id = req.user.id
-  const reporter_id = 1;
-
+const createIssue = async (payload: Iissue, reporter_id: number) => {
   const { title, description, type } = payload;
 
   // Validate issue type
@@ -52,6 +49,52 @@ const createIssue = async (payload: Iissue) => {
   return result.rows[0];
 };
 
+const getAllIssues = async (query: any) => {
+  const { sort = "newest", type, status } = query;
+
+  let sql = `SELECT * FROM issues`;
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  if (type) {
+    values.push(type);
+    conditions.push(`type = $${values.length}`);
+  }
+
+  if (status) {
+    values.push(status);
+    conditions.push(`status = $${values.length}`);
+  }
+
+  if (conditions.length > 0) {
+    sql += ` WHERE ` + conditions.join(" AND ");
+  }
+
+  sql += ` ORDER BY created_at ${sort === "oldest" ? "ASC" : "DESC"}`;
+
+  const issues = await pool.query(sql, values);
+
+  // batch user fetch
+  const reporterIds = issues.rows.map((i) => i.reporter_id);
+
+  const users = await pool.query(
+    `
+    SELECT id, name, role
+    FROM users
+    WHERE id = ANY($1)
+    `,
+    [reporterIds],
+  );
+
+  const result = issues.rows.map((issue) => ({
+    ...issue,
+    reporter: users.rows.find((u) => u.id === issue.reporter_id),
+  }));
+
+  return result;
+};
+
 export const issueServices = {
   createIssue,
+  getAllIssues,
 };

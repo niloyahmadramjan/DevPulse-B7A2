@@ -8,7 +8,7 @@ import { pool } from "../db/db.js";
 const isAuth = (...roles: ROLES[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization;
+      const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
         return res.status(401).json({
@@ -37,13 +37,6 @@ const isAuth = (...roles: ROLES[]) => {
       }
 
       const user = userData.rows[0];
-
-      if (!user.is_active) {
-        return res.status(403).json({
-          status: false,
-          message: "Unauthorized user!",
-        });
-      }
 
       if (roles.length && !roles.includes(user.role)) {
         return res.status(403).json({
