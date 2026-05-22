@@ -3,6 +3,7 @@ import { pool } from "../../db/db.js";
 import type { IUser } from "../../types/user.interface.js";
 import jwt from "jsonwebtoken";
 import config from "../../config/index.js";
+import AppError from "../../utils/AppError.js";
 
 const createUser = async (payload: IUser) => {
   const { name, email, password, role } = payload;
@@ -14,12 +15,12 @@ const createUser = async (payload: IUser) => {
     [email],
   );
   if (isUserExist.rows.length !== 0) {
-    throw new Error("User already exists!");
+    throw new AppError(409, "User already exists");
   }
   const allowedRoles = ["contributor", "maintainer"];
 
   if (role && !allowedRoles.includes(role)) {
-    throw new Error("Invalid role");
+    throw new AppError(400, "Invalid role");
   }
   const hashPass = await bcrypt.hash(password, 10);
   const result = await pool.query(
@@ -49,7 +50,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   // User not found
   if (result.rows.length === 0) {
-    throw new Error("Invalid credentials");
+    throw new AppError(400,"Invalid credentials");
   }
 
   const user = result.rows[0];
@@ -58,7 +59,7 @@ const loginUser = async (payload: TLoginUser) => {
   const isPasswordMatched = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatched) {
-    throw new Error("Invalid credentials");
+    throw new AppError(400,"Invalid credentials");
   }
 
   // JWT Payload
