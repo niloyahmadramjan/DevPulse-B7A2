@@ -2,6 +2,7 @@ import type { JwtPayload } from "jsonwebtoken";
 import { pool } from "../../db/db.js";
 import type { Iissue } from "../../types/issue.Iinterface.js";
 import { USER_ROLE } from "../../types/role.types.js";
+import AppError from "../../utils/AppError.js";
 
 const createIssue = async (payload: Iissue, reporter_id: number) => {
   const { title, description, type } = payload;
@@ -106,7 +107,7 @@ const getSingleIssue = async (id: string) => {
   );
 
   if (issueResult.rows.length === 0) {
-    throw new Error("Issue not found");
+    throw new AppError(404, "Issue not found");
   }
   const issue = issueResult.rows[0];
   const userResult = await pool.query(
