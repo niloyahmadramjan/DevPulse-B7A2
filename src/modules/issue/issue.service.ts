@@ -52,6 +52,7 @@ const createIssue = async (payload: Iissue, reporter_id: number) => {
 const getAllIssues = async (query: any) => {
   const { sort = "newest", type, status } = query;
 
+  // i used AI for understanding this logic
   let sql = `SELECT * FROM issues`;
   const conditions: string[] = [];
   const values: any[] = [];
@@ -94,7 +95,30 @@ const getAllIssues = async (query: any) => {
   return result;
 };
 
+const getSingleIssue = async (id: string) => {
+  const issueResult = await pool.query(
+    `
+    SELECT * FROM issues WHERE id = $1
+    `,
+    [id],
+  );
+
+  if (issueResult.rows.length === 0) {
+    throw new Error("Issue not found");
+  }
+  const issue = issueResult.rows[0];
+  const userResult = await pool.query(
+    `
+      SELECT id, name,role FROM users WHERE id=$1
+      `,
+    [issue.reporter_id],
+  );
+
+  return { ...issue, reporter: userResult.rows[0] };
+};
+
 export const issueServices = {
   createIssue,
   getAllIssues,
+  getSingleIssue,
 };

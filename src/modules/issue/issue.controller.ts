@@ -46,7 +46,32 @@ const getAllIssues = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleIssue = async (req: Request, res: Response) => {
+  
+  try {
+    // type gurd 
+   const issueId: string = typeof req.params.id === 'string' ? req.params.id : '';    
+    const result = await issueServices.getSingleIssue(issueId);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "get single issue",
+      data: result,
+    });
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
+
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Something went wrong",
+      error: errMessage,
+    });
+  }
+};
+
 export const issueController = {
   issueCreate,
   getAllIssues,
+  getSingleIssue,
 };
