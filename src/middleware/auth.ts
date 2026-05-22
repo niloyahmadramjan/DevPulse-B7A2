@@ -8,25 +8,25 @@ import { pool } from "../db/db.js";
 const isAuth = (...roles: ROLES[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
+      const token = req.headers.authorization;
 
       if (!token) {
         return res.status(401).json({
           status: false,
-          message: "Unauthorized access!",
+          message: "Unauthorized access token missing!",
         });
       }
 
       const decoded = Jwt.verify(
-        token,
-        config.jwt_secret as string
+        token as string,
+        config.jwt_secret as string,
       ) as JwtPayload;
 
       const userData = await pool.query(
         `
         SELECT * FROM users WHERE email = $1
         `,
-        [decoded.email]
+        [decoded.email],
       );
 
       if (userData.rows.length === 0) {

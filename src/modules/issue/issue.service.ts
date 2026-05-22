@@ -1,5 +1,7 @@
+import type { JwtPayload } from "jsonwebtoken";
 import { pool } from "../../db/db.js";
 import type { Iissue } from "../../types/issue.Iinterface.js";
+import { USER_ROLE } from "../../types/role.types.js";
 
 const createIssue = async (payload: Iissue, reporter_id: number) => {
   const { title, description, type } = payload;
@@ -116,9 +118,46 @@ const getSingleIssue = async (id: string) => {
 
   return { ...issue, reporter: userResult.rows[0] };
 };
+const updateIssue = async (issueId: string, user: JwtPayload,payload: Iissue) => {
+  const issueResult = await pool.query(
+    `
+    SELECT * FROM issues WHERE id = $1
+    `,[issueId]
+  )
+  if(issueResult.rows.length===0){
+    throw new Error("Issue not foud")
+  }
+  const issue = issueResult.rows[0]
+  //check contributor rules and issue owner contributor verify
+  if(user.role === USER_ROLE.contributor){
+    if(issue.reporter_id !== user.id){
+      throw new Error("Forbidden you are can't update this issue")
+    }
+  }
+
+  if(issue.status !== "open"){
+    throw new Error("You can only edit open issues")
+  }
+
+  const result = await pool.query(
+    `
+    UPDATE issues 
+    SET 
+    title = $1,
+    description = $2,
+    type = $3,
+    updated_at = NOW()
+    WHERE id = $4
+    RETURNING *
+    `,[payload.title, payload.description,payload.type,issueId]
+  )
+  return result.rows[0]
+
+};
 
 export const issueServices = {
   createIssue,
   getAllIssues,
   getSingleIssue,
+  updateIssue,
 };
