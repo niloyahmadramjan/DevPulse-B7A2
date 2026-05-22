@@ -96,9 +96,35 @@ const updateIssue = async (req: Request<Params>, res: Response) => {
   }
 };
 
+
+const deleteIssue = async (req: Request<Params>, res: Response) => {
+  try {
+    const user = req.user;
+    const issueId = req.params.id;
+    const result = await issueServices.deleteIssue(issueId, user);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue delete successfully",
+      data: result,
+    });
+  } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown error";
+
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Something went wrong",
+      error: errMessage,
+    });
+  }
+};
+
+
 export const issueController = {
   issueCreate,
   getAllIssues,
   getSingleIssue,
   updateIssue,
+  deleteIssue
 };
