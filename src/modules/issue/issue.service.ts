@@ -115,10 +115,17 @@ const getSingleIssue = async (id: string) => {
     [id],
   );
 
-  if (issueResult.rows.length === 0) {
-    throw new AppError(404, "Issue not found");
+   if (issueResult.rows.length === 0) {
+    return {
+      success: true,
+      message: "No issue available",
+      data: null,
+    };
   }
+
   const issue = issueResult.rows[0];
+
+
   const userResult = await pool.query(
     `
       SELECT id, name,role FROM users WHERE id=$1
@@ -126,7 +133,15 @@ const getSingleIssue = async (id: string) => {
     [issue.reporter_id],
   );
 
-  return { ...issue, reporter: userResult.rows[0] };
+   return {
+    success: true,
+    message: "Issue retrieved successfully",
+    data: {
+      ...issue,
+      reporter: userResult.rows[0],
+    },
+  };
+
 };
 const updateIssue = async (
   issueId: string,

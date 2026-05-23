@@ -56,9 +56,9 @@ const getSingleIssue = async (req: Request<Params>, res: Response) => {
     const result = await issueServices.getSingleIssue(issueId);
     sendResponse(res, {
       statusCode: 200,
-      success: true,
-      message: "get single issue",
-      data: result,
+      success: result.success,
+      message: result.message,
+      data: result.data,
     });
   } catch (error: unknown) {
     if (error instanceof AppError) {
