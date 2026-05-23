@@ -9,7 +9,7 @@ A collaborative backend platform for software teams to report bugs, suggest feat
 ## 🚀 Live Server
 
 ```bash
-https://your-live-server-url.com
+https://dev-pulse-b7a2.vercel.app
 ```
 
 ---
@@ -307,7 +307,7 @@ Example:
 ## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/your-username/devpulse.git
+git clone https://github.com/niloyahmadramjan/DevPulse-B7A2.git
 ```
 
 ---
