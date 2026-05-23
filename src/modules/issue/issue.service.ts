@@ -77,6 +77,12 @@ const getAllIssues = async (query: any) => {
   sql += ` ORDER BY created_at ${sort === "oldest" ? "ASC" : "DESC"}`;
 
   const issues = await pool.query(sql, values);
+   if (issues.rows.length === 0) {
+    return {
+      message: "No issue available",
+      data: [],
+    };
+  }
 
   // batch user fetch
   const reporterIds = issues.rows.map((i) => i.reporter_id);
@@ -95,7 +101,10 @@ const getAllIssues = async (query: any) => {
     reporter: users.rows.find((u) => u.id === issue.reporter_id),
   }));
 
-  return result;
+   return {
+    message: "Issues retrieved successfully",
+    data: result,
+  };
 };
 
 const getSingleIssue = async (id: string) => {

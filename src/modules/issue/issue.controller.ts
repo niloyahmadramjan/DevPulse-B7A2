@@ -34,8 +34,8 @@ const getAllIssues = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "get all issues",
-      data: result,
+      message: result.message,
+      data: result.data,
     });
   } catch (error: unknown) {
     if (error instanceof AppError) {

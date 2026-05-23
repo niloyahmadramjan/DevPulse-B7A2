@@ -137,7 +137,7 @@ JWT-based authentication system:
 Example Header:
 
 ```http
-Authorization: Bearer your_jwt_token
+Authorization: your_jwt_token
 ```
 
 ---
