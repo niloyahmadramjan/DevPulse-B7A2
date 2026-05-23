@@ -119,25 +119,30 @@ const getSingleIssue = async (id: string) => {
 
   return { ...issue, reporter: userResult.rows[0] };
 };
-const updateIssue = async (issueId: string, user: JwtPayload,payload: Iissue) => {
+const updateIssue = async (
+  issueId: string,
+  user: JwtPayload,
+  payload: Iissue,
+) => {
   const issueResult = await pool.query(
     `
     SELECT * FROM issues WHERE id = $1
-    `,[issueId]
-  )
-  if(issueResult.rows.length===0){
-    throw new Error("Issue not foud")
+    `,
+    [issueId],
+  );
+  if (issueResult.rows.length === 0) {
+    throw new Error("Issue not foud");
   }
-  const issue = issueResult.rows[0]
+  const issue = issueResult.rows[0];
   //check contributor rules and issue owner contributor verify
-  if(user.role === USER_ROLE.contributor){
-    if(issue.reporter_id !== user.id){
-      throw new Error("Forbidden you are can't update this issue")
+  if (user.role === USER_ROLE.contributor) {
+    if (issue.reporter_id !== user.id) {
+      throw new Error("Forbidden you are can't update this issue");
     }
   }
 
-  if(issue.status !== "open"){
-    throw new Error("You can only edit open issues")
+  if (issue.status !== "open") {
+    throw new Error("You can only edit open issues");
   }
 
   const result = await pool.query(
@@ -150,36 +155,35 @@ const updateIssue = async (issueId: string, user: JwtPayload,payload: Iissue) =>
     updated_at = NOW()
     WHERE id = $4
     RETURNING *
-    `,[payload.title, payload.description,payload.type,issueId]
-  )
-  return result.rows[0]
-
+    `,
+    [payload.title, payload.description, payload.type, issueId],
+  );
+  return result.rows[0];
 };
 const deleteIssue = async (issueId: string, user: JwtPayload) => {
   const issueResult = await pool.query(
     `
     SELECT * FROM issues WHERE id = $1
-    `,[issueId]
-  )
-  if(issueResult.rows.length===0){
-    throw new Error("Issue not foud")
+    `,
+    [issueId],
+  );
+  if (issueResult.rows.length === 0) {
+    throw new Error("Issue not foud");
   }
-  const issue = issueResult.rows[0]
+  const issue = issueResult.rows[0];
   //check contributor rules and issue owner contributor verify
-  if(user.role !== USER_ROLE.maintainer){
-      throw new Error("Forbidden you are can't delete this issue")
-   
+  if (user.role !== USER_ROLE.maintainer) {
+    throw new Error("Forbidden you are can't delete this issue");
   }
-
 
   const result = await pool.query(
     `
    DELETE FROM issues WHERE id = $1
    
-    `,[issueId]
-  )
-  return result.rows[0]
-
+    `,
+    [issueId],
+  );
+  return result.rows[0];
 };
 
 export const issueServices = {

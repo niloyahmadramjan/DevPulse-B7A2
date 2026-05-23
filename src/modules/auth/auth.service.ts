@@ -4,6 +4,7 @@ import type { IUser } from "../../types/user.interface.js";
 import jwt from "jsonwebtoken";
 import config from "../../config/index.js";
 import AppError from "../../utils/AppError.js";
+import type { TLoginUser } from "../../types/login.types.js";
 
 const createUser = async (payload: IUser) => {
   const { name, email, password, role } = payload;
@@ -35,10 +36,7 @@ const createUser = async (payload: IUser) => {
 
   return result.rows[0];
 };
-type TLoginUser = {
-  email: string;
-  password: string;
-};
+
 const loginUser = async (payload: TLoginUser) => {
   const { email, password } = payload;
 
