@@ -9,6 +9,7 @@ const isAuth = (...roles: ROLES[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization;
+      console.log(token)
 
       if (!token) {
         return res.status(401).json({
@@ -24,9 +25,9 @@ const isAuth = (...roles: ROLES[]) => {
 
       const userData = await pool.query(
         `
-        SELECT * FROM users WHERE email = $1
+        SELECT * FROM users WHERE id = $1
         `,
-        [decoded.email],
+        [decoded.id],
       );
 
       if (userData.rows.length === 0) {
